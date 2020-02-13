@@ -39,6 +39,15 @@
   'targets': [
     {
       'target_name': 'copied_files',
+      'cflags!': [ '-fno-exceptions' ],
+      'cflags_cc!': [ '-fno-exceptions' ],
+      'xcode_settings': { 'GCC_ENABLE_CPP_EXCEPTIONS': 'YES',
+        'CLANG_CXX_LIBRARY': 'libc++',
+        'MACOSX_DEPLOYMENT_TARGET': '10.7',
+      },
+      'msvs_settings': {
+        'VCCLCompilerTool': { 'ExceptionHandling': 1 },
+      },
       'conditions': [
         ['OS=="win"', {
           'copies' : [{
@@ -52,6 +61,15 @@
     },
     {
       'target_name': 'scrypt_lib',
+      'cflags!': [ '-fno-exceptions' ],
+      'cflags_cc!': [ '-fno-exceptions' ],
+      'xcode_settings': { 'GCC_ENABLE_CPP_EXCEPTIONS': 'YES',
+        'CLANG_CXX_LIBRARY': 'libc++',
+        'MACOSX_DEPLOYMENT_TARGET': '10.7',
+      },
+      'msvs_settings': {
+        'VCCLCompilerTool': { 'ExceptionHandling': 1 },
+      },
       'type' : 'static_library',
       'sources': [
         'scrypt/scrypt-1.2.0/lib/crypto/crypto_scrypt.c',
@@ -63,6 +81,7 @@
         '<@(scrypt_platform_specific_files)',
       ],
       'include_dirs': [
+        '<!@(node -p "require(\'node-addon-api\').include")',
         'scrypt/scrypt-1.2.0/',
         'scrypt/scrypt-1.2.0/libcperciva/cpusupport',
         'scrypt/scrypt-1.2.0/libcperciva/alg',
@@ -76,10 +95,20 @@
       'conditions': [
         ['OS=="win"', { 'defines' : [ 'inline=__inline' ] }],
       ],
-      'dependencies': ['copied_files'],
+      'dependencies': [
+        '<!(node -p "require(\'node-addon-api\').gyp")','copied_files'],
     },
     {
       'target_name': 'scrypt_wrapper',
+      'cflags!': [ '-fno-exceptions' ],
+      'cflags_cc!': [ '-fno-exceptions' ],
+      'xcode_settings': { 'GCC_ENABLE_CPP_EXCEPTIONS': 'YES',
+        'CLANG_CXX_LIBRARY': 'libc++',
+        'MACOSX_DEPLOYMENT_TARGET': '10.7',
+      },
+      'msvs_settings': {
+        'VCCLCompilerTool': { 'ExceptionHandling': 1 },
+      },
       'type' : 'static_library',
       'sources': [
         'src/util/memlimit.c',
@@ -88,6 +117,7 @@
         'src/scryptwrapper/hash.c'
       ],
       'include_dirs': [
+        '<!@(node -p "require(\'node-addon-api\').include")',
         'src/scryptwrapper/inc',
         'src',
         'scrypt/scrypt-1.2.0/libcperciva/alg',
@@ -106,6 +136,15 @@
     },
     {
       'target_name': 'scrypt',
+      'cflags!': [ '-fno-exceptions' ],
+      'cflags_cc!': [ '-fno-exceptions' ],
+      'xcode_settings': { 'GCC_ENABLE_CPP_EXCEPTIONS': 'YES',
+        'CLANG_CXX_LIBRARY': 'libc++',
+        'MACOSX_DEPLOYMENT_TARGET': '10.7',
+      },
+      'msvs_settings': {
+        'VCCLCompilerTool': { 'ExceptionHandling': 1 },
+      },
       'sources': [
         'src/node-boilerplate/scrypt_common.cc',
         'src/node-boilerplate/scrypt_params_async.cc',
@@ -119,13 +158,14 @@
         'scrypt_node.cc'
       ],
       'include_dirs': [
-        '<!(node -e "require(\'nan\')")',
+        '<!@(node -p "require(\'node-addon-api\').include")',
         'src/util',
         'src/scryptwrapper/inc',
         'src/node-boilerplate/inc'
       ],
       'cflags': ['<@(compiler-flags)'],
-      'dependencies': ['scrypt_wrapper','scrypt_lib'],
+      'dependencies': [
+        '<!(node -p "require(\'node-addon-api\').gyp")','scrypt_wrapper','scrypt_lib'],
     }
   ],
 }

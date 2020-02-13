@@ -29,26 +29,25 @@ Barry Steyn barry.steyn@gmail.com
 
 class ScryptHashAsyncWorker : public ScryptAsyncWorker {
   public:
-    ScryptHashAsyncWorker(Nan::NAN_METHOD_ARGS_TYPE info) :
-      ScryptAsyncWorker(new Nan::Callback(info[4].As<v8::Function>())),
-      key_ptr(reinterpret_cast<uint8_t*>(node::Buffer::Data(info[0]))),
-      key_size(node::Buffer::Length(info[0])),
-      params(info[1]->ToObject()),
-      hash_size(info[2]->IntegerValue()),
-      salt_ptr(reinterpret_cast<uint8_t*>(node::Buffer::Data(info[3]))),
-      salt_size(static_cast<size_t>(node::Buffer::Length(info[3])))
+    ScryptHashAsyncWorker(const Napi::CallbackInfo& info) :
+      ScryptAsyncWorker(info[4].As<Napi::Function>()),
+      key_ptr(reinterpret_cast<uint8_t*>(info[0].As<Napi::Buffer<char>>().Data())),
+      key_size(info[0].As<Napi::Buffer<char>>().Length()),
+      params(info.Env(), info[1].ToObject()),
+      hash_size(info[2].As<Napi::Number>().Int64Value()),
+      salt_ptr(reinterpret_cast<uint8_t*>(info[3].As<Napi::Buffer<char>>().Data())),
+      salt_size(static_cast<size_t>(info[3].As<Napi::Buffer<char>>().Length()))
     {
-      ScryptPeristentObject = Nan::New<v8::Object>();
-      ScryptPeristentObject->Set(Nan::New("KeyBuffer").ToLocalChecked(), info[0]);
-      ScryptPeristentObject->Set(Nan::New("HashBuffer").ToLocalChecked(), Nan::NewBuffer(static_cast<uint32_t>(hash_size)).ToLocalChecked());
-      ScryptPeristentObject->Set(Nan::New("SaltBuffer").ToLocalChecked(), info[3]);
-      SaveToPersistent("ScryptPeristentObject", ScryptPeristentObject);
+      ScryptPeristentObject = Napi::Object::New(info.Env());
+      ScryptPeristentObject.Set(Napi::String::New(info.Env(), "KeyBuffer"), info[0]);
+      ScryptPeristentObject.Set(Napi::String::New(info.Env(), "HashBuffer"), Napi::Buffer<char>::New(info.Env(), static_cast<uint32_t>(hash_size)));
+      ScryptPeristentObject.Set(Napi::String::New(info.Env(), "SaltBuffer"), info[3]);
 
-      hash_ptr = reinterpret_cast<uint8_t*>(node::Buffer::Data(ScryptPeristentObject->Get(Nan::New("HashBuffer").ToLocalChecked())));
+      hash_ptr = reinterpret_cast<uint8_t*>(ScryptPeristentObject.Get(Napi::String::New(info.Env(), "HashBuffer")).As<Napi::Buffer<char>>().Data());
     };
 
     void Execute();
-    void HandleOKCallback();
+    void OnOK();
 
   private:
     const uint8_t* key_ptr;

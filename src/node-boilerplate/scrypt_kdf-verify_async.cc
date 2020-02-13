@@ -1,5 +1,4 @@
-#include <nan.h>
-#include <node.h>
+#include <napi.h>
 
 #include "scrypt_kdf-verify_async.h"
 
@@ -8,7 +7,7 @@ extern "C" {
 	#include "keyderivation.h"
 }
 
-using namespace v8;
+using namespace Napi;
 
 void ScryptKDFVerifyAsyncWorker::Execute() {
   //
@@ -19,17 +18,16 @@ void ScryptKDFVerifyAsyncWorker::Execute() {
   result = (result == 11) ? 0 : result; // Set result to 0 if 11 so error not thrown
 }
 
-void ScryptKDFVerifyAsyncWorker::HandleOKCallback() {
-  Nan::HandleScope scope;
+void ScryptKDFVerifyAsyncWorker::OnOK() {
+  Napi::HandleScope scope(Env());
 
-  Local<Value> argv[] = {
-    Nan::Null(),
-    (match) ? Nan::True() : Nan::False()
-  };
-
-  callback->Call(2, argv);
+  Callback().Call({
+    Env().Null(),
+    (match) ? Napi::Boolean::New(Env(), true) : Napi::Boolean::New(Env(), false)
+  });
 }
 
-NAN_METHOD(kdfVerify) {
-  Nan::AsyncQueueWorker(new ScryptKDFVerifyAsyncWorker(info));
+void kdfVerify(const Napi::CallbackInfo& info) {
+  ScryptKDFVerifyAsyncWorker* kdfVerifyWorker = new ScryptKDFVerifyAsyncWorker(info);
+  kdfVerifyWorker->Queue();
 }

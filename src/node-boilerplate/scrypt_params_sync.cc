@@ -1,5 +1,4 @@
-#include <nan.h>
-#include <node.h>
+#include <napi.h>
 
 #include "scrypt_common.h"
 
@@ -8,10 +7,10 @@ extern "C" {
   #include "pickparams.h"
 }
 
-using namespace v8;
+using namespace Napi;
 
 //Synchronous access to scrypt params
-NAN_METHOD(paramsSync) {
+Napi::Value paramsSync(const Napi::CallbackInfo& info) {
   //
   // Variable Declaration
   //
@@ -22,10 +21,11 @@ NAN_METHOD(paramsSync) {
   //
   // Arguments from JavaScript
   //
-  const double maxtime = info[0]->NumberValue();
-  const size_t maxmem = info[2]->IntegerValue();
-  const double maxmemfrac = info[1]->NumberValue();
-  const size_t osfreemem = info[3]->IntegerValue();
+  Napi::Env env = info.Env();
+  const double maxtime = info[0].As<Napi::Number>().DoubleValue();
+  const size_t maxmem = info[2].As<Napi::Number>().Int64Value();
+  const double maxmemfrac = info[1].As<Napi::Number>().DoubleValue();
+  const size_t osfreemem = info[3].As<Napi::Number>().Int64Value();
 
   //
   // Scrypt: calculate input parameters
@@ -36,16 +36,16 @@ NAN_METHOD(paramsSync) {
   // Error handling
   //
   if (result) {
-    Nan::ThrowError(NodeScrypt::ScryptError(result));
+    Napi::Error::New(env, NodeScrypt::ScryptError(env, result)).ThrowAsJavaScriptException();
   }
 
   //
   // Return values in JSON object
   //
-  Local <Object> obj = Nan::New<Object>();
-  obj->Set(Nan::New("N").ToLocalChecked(), Nan::New<Integer>(logN));
-  obj->Set(Nan::New("r").ToLocalChecked(), Nan::New<Integer>(r));
-  obj->Set(Nan::New("p").ToLocalChecked(), Nan::New<Integer>(p));
+  Napi::Object obj = Napi::Object::New(env);
+  obj.Set(Napi::String::New(env, "N"), Napi::Number::New(env, logN));
+  obj.Set(Napi::String::New(env, "r"), Napi::Number::New(env, r));
+  obj.Set(Napi::String::New(env, "p"), Napi::Number::New(env, p));
 
-  info.GetReturnValue().Set(obj);
+  return obj;
 }

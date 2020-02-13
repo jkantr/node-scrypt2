@@ -1,5 +1,4 @@
-#include <nan.h>
-#include <node.h>
+#include <napi.h>
 
 #include "scrypt_common.h"
 
@@ -10,36 +9,39 @@ extern "C" {
 	#include "keyderivation.h"
 }
 
-using namespace v8;
+using namespace Napi;
 
 //
 // Synchronous Scrypt params
 //
-NAN_METHOD(kdfSync) {
+Napi::Value kdfSync(const Napi::CallbackInfo& info) {
+    Napi::Env env = info.Env();
+
     //
     // Variable Declaration
     //
-    Local<Value> kdfResult = Nan::NewBuffer(96).ToLocalChecked();
+    Napi::Value kdfResult = Napi::Buffer<char>::New(env, 96);
 
     //
     // Arguments from JavaScript
     //
-    const uint8_t* key_ptr = reinterpret_cast<uint8_t*>(node::Buffer::Data(info[0])); //assume info[0] is a buffer (checked in JS land)
-    const size_t keySize = node::Buffer::Length(info[0]);
-    const NodeScrypt::Params params = info[1]->ToObject();
-    const uint8_t* salt_ptr = reinterpret_cast<uint8_t*>(node::Buffer::Data(info[2]));
+    const uint8_t* key_ptr = reinterpret_cast<uint8_t*>(info[0].As<Napi::Buffer<char>>().Data()); //assume info[0] is a buffer (checked in JS land)
+    const size_t keySize = info[0].As<Napi::Buffer<char>>().Length();
+    const NodeScrypt::Params params(env, info[1].ToObject());
+    const uint8_t* salt_ptr = reinterpret_cast<uint8_t*>(info[2].As<Napi::Buffer<char>>().Data());
 
     //
     // Scrypt key derivation function
     //
-    const unsigned int result = KDF(key_ptr, keySize, reinterpret_cast<uint8_t*>(node::Buffer::Data(kdfResult)), params.N, params.r, params.p, salt_ptr);
+    const unsigned int result = KDF(key_ptr, keySize, reinterpret_cast<uint8_t*>(kdfResult.As<Napi::Buffer<char>>().Data()), params.N, params.r, params.p, salt_ptr);
 
     //
     // Error handling
     //
     if (result) {
-        Nan::ThrowError(NodeScrypt::ScryptError(result));
+        Napi::Error::New(env, NodeScrypt::ScryptError(env, result)).ThrowAsJavaScriptException();
+
     }
 
-    info.GetReturnValue().Set(kdfResult);
+    return kdfResult;
 }

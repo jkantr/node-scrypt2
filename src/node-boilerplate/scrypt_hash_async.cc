@@ -22,8 +22,7 @@ freely, subject to the following restrictions:
 Barry Steyn barry.steyn@gmail.com
 */
 
-#include <nan.h>
-#include <node.h>
+#include <napi.h>
 
 #include "scrypt_hash_async.h"
 
@@ -32,7 +31,7 @@ extern "C" {
   #include "hash.h"
 }
 
-using namespace v8;
+using namespace Napi;
 
 //
 // Scrypt Hash Function
@@ -41,20 +40,19 @@ void ScryptHashAsyncWorker::Execute() {
   result = Hash(key_ptr, key_size, salt_ptr, salt_size, params.N, params.r, params.p, hash_ptr, hash_size);
 }
 
-void ScryptHashAsyncWorker::HandleOKCallback() {
-  Nan::HandleScope scope;
+void ScryptHashAsyncWorker::OnOK() {
+  Napi::HandleScope scope(Env());
 
-  Local<Value> argv[] = {
-    Nan::Null(),
-    GetFromPersistent("ScryptPeristentObject")->ToObject()->Get(Nan::New("HashBuffer").ToLocalChecked())
-  };
-
-  callback->Call(2, argv);
+  Callback().Call({
+    Env().Null(),
+    ScryptPeristentObject.Get(Napi::String::New(Env(), "HashBuffer"))
+  });
 }
 
 //
 // Asynchronous Scrypt Params
 //
-NAN_METHOD(hash) {
-  Nan::AsyncQueueWorker(new ScryptHashAsyncWorker(info));
+void hash(const Napi::CallbackInfo& info) {
+  ScryptHashAsyncWorker* hashWorker = new ScryptHashAsyncWorker(info);
+  hashWorker->Queue();
 }

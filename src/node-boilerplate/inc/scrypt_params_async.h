@@ -30,12 +30,12 @@ Barry Steyn barry.steyn@gmail.com
 // Async class
 class ScryptParamsAsyncWorker : public ScryptAsyncWorker {
   public:
-    ScryptParamsAsyncWorker(Nan::NAN_METHOD_ARGS_TYPE info) :
-      ScryptAsyncWorker(new Nan::Callback(info[4].As<v8::Function>())),
-      maxtime(info[0]->NumberValue()),
-      maxmemfrac(info[1]->NumberValue()),
-      maxmem(info[2]->IntegerValue()),
-      osfreemem(info[3]->IntegerValue())
+    ScryptParamsAsyncWorker(const Napi::CallbackInfo& info) :
+      ScryptAsyncWorker(info[4].As<Napi::Function>()),
+      maxtime(info[0].As<Napi::Number>().DoubleValue()),
+      maxmemfrac(info[1].As<Napi::Number>().DoubleValue()),
+      maxmem(info[2].As<Napi::Number>().Int64Value()),
+      osfreemem(info[3].As<Napi::Number>().Int64Value())
     {
       logN = 0;
       r = 0;
@@ -43,7 +43,8 @@ class ScryptParamsAsyncWorker : public ScryptAsyncWorker {
     };
 
     void Execute();
-    void HandleOKCallback();
+    void OnOK();
+    std::vector<Napi::Value> GetResult();
 
   private:
     const double maxtime;

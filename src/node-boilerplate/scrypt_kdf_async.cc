@@ -1,5 +1,4 @@
-#include <nan.h>
-#include <node.h>
+#include <napi.h>
 
 #include "scrypt_kdf_async.h"
 
@@ -8,7 +7,7 @@ extern "C" {
 	#include "keyderivation.h"
 }
 
-using namespace v8;
+using namespace Napi;
 
 void ScryptKDFAsyncWorker::Execute() {
     //
@@ -17,18 +16,17 @@ void ScryptKDFAsyncWorker::Execute() {
     result = KDF(key_ptr, key_size, KDFResult_ptr, params.N, params.r, params.p, salt_ptr);
 }
 
-void ScryptKDFAsyncWorker::HandleOKCallback() {
-    Nan::HandleScope scope;
+void ScryptKDFAsyncWorker::OnOK() {
+    Napi::HandleScope scope(Env());
 
-    Local<Value> argv[] = {
-        Nan::Null(),
-        GetFromPersistent("ScryptPeristentObject")->ToObject()->Get(Nan::New("KDFResult").ToLocalChecked())
-    };
-
-    callback->Call(2, argv);
+    Callback().Call({
+        Env().Null(),
+        ScryptPeristentObject.Get(Napi::String::New(Env(), "KDFResult"))
+    });
 }
 
 // Asynchronous access to scrypt params
-NAN_METHOD(kdf) {
-    Nan::AsyncQueueWorker(new ScryptKDFAsyncWorker(info));
+void kdf(const Napi::CallbackInfo& info) {
+    ScryptKDFAsyncWorker* kdfWorker = new ScryptKDFAsyncWorker(info);
+    kdfWorker->Queue();
 }

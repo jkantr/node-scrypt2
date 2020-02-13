@@ -1,5 +1,4 @@
-#include <nan.h>
-#include <node.h>
+#include <napi.h>
 
 #include "scrypt_common.h"
 
@@ -8,16 +7,17 @@ extern "C" {
   #include "keyderivation.h"
 }
 
-using namespace v8;
+using namespace Napi;
 
 //Synchronous access to scrypt params
-NAN_METHOD(kdfVerifySync) {
+Napi::Value kdfVerifySync(const Napi::CallbackInfo& info) {
+  Napi::Env env = info.Env();
   //
   // Variable Declaration
   //
-  const uint8_t* kdf_ptr = reinterpret_cast<uint8_t*>(node::Buffer::Data(info[0]));
-  const uint8_t* key_ptr = reinterpret_cast<uint8_t*>(node::Buffer::Data(info[1]));
-  const size_t key_size = node::Buffer::Length(info[1]);
+  const uint8_t* kdf_ptr = reinterpret_cast<uint8_t*>(info[0].As<Napi::Buffer<char>>().Data());
+  const uint8_t* key_ptr = reinterpret_cast<uint8_t*>(info[1].As<Napi::Buffer<char>>().Data());
+  const size_t key_size = info[1].As<Napi::Buffer<char>>().Length();
 
   //
   // Scrypt KDF Verification
@@ -28,8 +28,9 @@ NAN_METHOD(kdfVerifySync) {
   // Return result (or error)
   //
   if (result && result != 11) { // 11 is the "error" code for an incorrect match
-    Nan::ThrowError(NodeScrypt::ScryptError(result));
+    Napi::Error::New(env, NodeScrypt::ScryptError(env, result)).ThrowAsJavaScriptException();
+
   }
 
-  info.GetReturnValue().Set((!result) ? Nan::True() : Nan::False());
+  return (!result) ? Napi::Boolean::New(env, true) : Napi::Boolean::New(env, false);
 }

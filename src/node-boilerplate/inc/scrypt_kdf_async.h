@@ -29,24 +29,24 @@ Barry Steyn barry.steyn@gmail.com
 
 class ScryptKDFAsyncWorker : public ScryptAsyncWorker {
   public:
-    ScryptKDFAsyncWorker(Nan::NAN_METHOD_ARGS_TYPE args) :
-      ScryptAsyncWorker(new Nan::Callback(args[3].As<v8::Function>())),
-      key_ptr(reinterpret_cast<uint8_t*>(node::Buffer::Data(args[0]))),
-      key_size(node::Buffer::Length(args[0])),
-      params(args[1]->ToObject()),
-      salt_ptr(reinterpret_cast<uint8_t*>(node::Buffer::Data(args[2])))
+    ScryptKDFAsyncWorker(const Napi::CallbackInfo& args) :
+      ScryptAsyncWorker(args[3].As<Napi::Function>()),
+      key_ptr(reinterpret_cast<uint8_t*>(args[0].As<Napi::Buffer<char>>().Data())),
+      key_size(args[0].As<Napi::Buffer<char>>().Length()),
+      params(args.Env(), args[1].ToObject()),
+      salt_ptr(reinterpret_cast<uint8_t*>(args[2].As<Napi::Buffer<char>>().Data()))
     {
-      ScryptPeristentObject = Nan::New<v8::Object>();
-      ScryptPeristentObject->Set(Nan::New("keyBuffer").ToLocalChecked(), args[0]);
-      ScryptPeristentObject->Set(Nan::New("KDFResult").ToLocalChecked(), Nan::NewBuffer(96).ToLocalChecked());
-      ScryptPeristentObject->Set(Nan::New("salt").ToLocalChecked(), args[2]);
-      SaveToPersistent("ScryptPeristentObject", ScryptPeristentObject);
+      Napi::Env env = args.Env();
+      ScryptPeristentObject = Napi::Object::New(env);
+      ScryptPeristentObject.Set(Napi::String::New(env, "keyBuffer"), args[0]);
+      ScryptPeristentObject.Set(Napi::String::New(env, "KDFResult"), Napi::Buffer<char>::New(env, 96));
+      ScryptPeristentObject.Set(Napi::String::New(env, "salt"), args[2]);
 
-      KDFResult_ptr = reinterpret_cast<uint8_t*>(node::Buffer::Data(ScryptPeristentObject->Get(Nan::New("KDFResult").ToLocalChecked())));
+      KDFResult_ptr = reinterpret_cast<uint8_t*>(ScryptPeristentObject.Get(Napi::String::New(env, "KDFResult")).As<Napi::Buffer<char>>().Data());
     };
 
     void Execute();
-    void HandleOKCallback();
+    void OnOK();
 
   private:
     uint8_t* KDFResult_ptr;

@@ -24,52 +24,44 @@
   Barry Steyn barry.steyn@gmail.com
 
 */
-#include <node.h>
-#include <nan.h>
-#include <v8.h>
+#include <napi.h>
 
-using namespace v8;
+
+using namespace Napi;
 
 //
 // Forward declarations
 //
-NAN_METHOD(paramsSync);
-NAN_METHOD(params);
-NAN_METHOD(kdfSync);
-NAN_METHOD(kdf);
-NAN_METHOD(kdfVerifySync);
-NAN_METHOD(kdfVerify);
-NAN_METHOD(hashSync);
-NAN_METHOD(hash);
+Napi::Value paramsSync(const Napi::CallbackInfo& info);
+Napi::Value params(const Napi::CallbackInfo& info);
+Napi::Value kdfSync(const Napi::CallbackInfo& info);
+Napi::Value kdf(const Napi::CallbackInfo& info);
+Napi::Value kdfVerifySync(const Napi::CallbackInfo& info);
+Napi::Value kdfVerify(const Napi::CallbackInfo& info);
+Napi::Value hashSync(const Napi::CallbackInfo& info);
+Napi::Value hash(const Napi::CallbackInfo& info);
 
 //
 // Module initialisation
 //
-NAN_MODULE_INIT(InitAll) {
+Napi::Object InitAll(Napi::Env env, Napi::Object exports) {
+  exports.Set(Napi::String::New(env, "paramsSync"), Napi::Function::New(env, paramsSync));
 
-  Nan::Set(target, Nan::New<String>("paramsSync").ToLocalChecked(),
-    Nan::GetFunction(Nan::New<FunctionTemplate>(paramsSync)).ToLocalChecked());
+  exports.Set(Napi::String::New(env, "params"), Napi::Function::New(env, params));
 
-  Nan::Set(target, Nan::New<String>("params").ToLocalChecked(),
-    Nan::GetFunction(Nan::New<FunctionTemplate>(params)).ToLocalChecked());
+  exports.Set(Napi::String::New(env, "kdfSync"), Napi::Function::New(env, kdfSync));
 
-  Nan::Set(target, Nan::New<String>("kdfSync").ToLocalChecked(),
-    Nan::GetFunction(Nan::New<FunctionTemplate>(kdfSync)).ToLocalChecked());
+  exports.Set(Napi::String::New(env, "kdf"), Napi::Function::New(env, kdf));
 
-  Nan::Set(target, Nan::New<String>("kdf").ToLocalChecked(),
-    Nan::GetFunction(Nan::New<FunctionTemplate>(kdf)).ToLocalChecked());
+  exports.Set(Napi::String::New(env, "verifySync"), Napi::Function::New(env, kdfVerifySync));
 
-  Nan::Set(target, Nan::New<String>("verifySync").ToLocalChecked(),
-    Nan::GetFunction(Nan::New<FunctionTemplate>(kdfVerifySync)).ToLocalChecked());
+  exports.Set(Napi::String::New(env, "verify"), Napi::Function::New(env, kdfVerify));
 
-  Nan::Set(target, Nan::New<String>("verify").ToLocalChecked(),
-    Nan::GetFunction(Nan::New<FunctionTemplate>(kdfVerify)).ToLocalChecked());
+  exports.Set(Napi::String::New(env, "hashSync"), Napi::Function::New(env, hashSync));
 
-  Nan::Set(target, Nan::New<String>("hashSync").ToLocalChecked(),
-    Nan::GetFunction(Nan::New<FunctionTemplate>(hashSync)).ToLocalChecked());
+  exports.Set(Napi::String::New(env, "hash"), Napi::Function::New(env, hash));
 
-  Nan::Set(target, Nan::New<String>("hash").ToLocalChecked(),
-    Nan::GetFunction(Nan::New<FunctionTemplate>(hash)).ToLocalChecked());
+  return exports;
 }
 
-NODE_MODULE(scrypt, InitAll)
+NODE_API_MODULE(scrypt, InitAll)

@@ -31,48 +31,41 @@ Barry Steyn barry.steyn@gmail.com
 // Scrypt Async Worker
 //
 
-//Note: This class is implemented for common async
+// Note: This class is implemented for common async
 // class properties that applies to Scrypt functionality
 // only. These properties are:
 //  (1) Creation of Scrypt specific Error Object
 //  (2) result integer that denotes the response from the Scrypt C library
 //  (3) ScryptPeristentObject that holds input arguments from JS land
-class ScryptAsyncWorker : public Nan::AsyncWorker {
+class ScryptAsyncWorker : public Napi::AsyncWorker {
   public:
-    ScryptAsyncWorker(Nan::Callback* callback) : Nan::AsyncWorker(callback), result(0) {};
+    ScryptAsyncWorker(Napi::Function callback) : Napi::AsyncWorker(callback), result(0) {};
 
     //
-    // Overrides Nan, needed for creating Scrypt Error
+    // Overrides N-API, needed for creating Scrypt Error
     //
-    void HandleErrorCallback() {
-      Nan::HandleScope scope;
-
-      v8::Local<v8::Value> argv[] = {
-          NodeScrypt::ScryptError(result)
-      };
-      callback->Call(1, argv);
+    void OnError() {
+      Napi::HandleScope scope(Env());
+      Callback().Call({ NodeScrypt::ScryptError(Env(), result) });
     }
 
     //
-    // Overrides Nan, needed for checking result
+    // Overrides N-API, needed for checking result
     //
-    void WorkComplete() {
-      Nan::HandleScope scope;
-
+    void OnWorkComplete() {
       if (result == 0)
-        HandleOKCallback();
+        OnOK();
       else
-        HandleErrorCallback();
+        OnError();
 
-      delete callback;
-      callback = NULL;
+      Destroy();
     }
 
   protected:
     //
     // Scrypt specific state
     //
-    v8::Local<v8::Object> ScryptPeristentObject; // Anything persistent stored here
+    Napi::Object ScryptPeristentObject; // Anything persistent stored here
     unsigned int result; // Result of Scrypt functions
 };
 

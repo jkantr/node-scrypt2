@@ -35,16 +35,16 @@ namespace NodeScrypt {
     const uint32_t r;
     const uint32_t p;
 
-    Params(const v8::Local<v8::Object> &obj) :
-      N(obj->Get(Nan::New("N").ToLocalChecked())->Uint32Value()),
-      r(obj->Get(Nan::New("r").ToLocalChecked())->Uint32Value()),
-      p(obj->Get(Nan::New("p").ToLocalChecked())->Uint32Value()) {}
+    Params(Napi::Env env, const Napi::Object &obj) :
+      N(obj.Get(Napi::String::New(env, "N")).As<Napi::Number>().Uint32Value()),
+      r(obj.Get(Napi::String::New(env, "r")).As<Napi::Number>().Uint32Value()),
+      p(obj.Get(Napi::String::New(env, "p")).As<Napi::Number>().Uint32Value()) {}
   };
 
   //
   // Create a Scrypt error
   //
-  v8::Local<v8::Value> ScryptError(const unsigned int error);
+  Napi::String ScryptError(Napi::Env env, const unsigned int error);
 };
 
 #endif /* _SCRYPTCOMMON_H_ */
