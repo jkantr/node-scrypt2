@@ -370,11 +370,11 @@ are vastly different (even though it is the same password being hashed). This is
 the **random** salt that has been added, ensuring that no two hashes will ever be identical,
 even if the password that is being hashed is the same.
 
-For those that are curious or paranoid, please look at how the kdf is both [produced](https://github.com/barrysteyn/node-scrypt/blob/master/src/scryptwrapper/keyderivation.c#L36-L80)
-and [verified](https://github.com/barrysteyn/node-scrypt/blob/master/src/scryptwrapper/keyderivation.c#L82-L121) (you are going to need some knowledge of the [C language](http://c.learncodethehardway.org/book/) for this).
+For those that are curious or paranoid, please look at how the kdf is both [produced](https://github.com/jkantr/node-scrypt2/blob/master/src/scryptwrapper/keyderivation.c#L36-L80)
+and [verified](https://github.com/jkantr/node-scrypt2/blob/master/src/scryptwrapper/keyderivation.c#L82-L121) (you are going to need some knowledge of the [C language](http://c.learncodethehardway.org/book/) for this).
 
 # Roadmap
-See [changelog](https://github.com/barrysteyn/node-scrypt/blob/master/changelog.md).
+See [changelog](https://github.com/jkantr/node-scrypt2/blob/master/changelog.md).
 
 # Credits
 The scrypt library is Colin Percival's [scrypt](http://www.tarsnap.com/scrypt.html) project.
