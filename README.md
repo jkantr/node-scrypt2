@@ -1,9 +1,9 @@
-# node-script2
+# node-scrypt2
 
 ## NOTICE
 This module is an updated, modernized, and maintained fork of the `node-scrypt` library, which is unmaintained and deprecated.
 
-Scrypt for Node/IO is a native node/io C++ wrapper for Colin Percival's
+`node-scrypt2` is a native Node.js C++ wrapper for Colin Percival's
 [scrypt](https://www.tarsnap.com/scrypt.html) cryptographic hash utility.
 
 As should be the case with any security tool, this library should be scrutinized
