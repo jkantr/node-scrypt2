@@ -38,7 +38,7 @@ class ScryptHashAsyncWorker : public ScryptAsyncWorker {
       salt_ptr(reinterpret_cast<uint8_t*>(info[3].As<Napi::Buffer<char>>().Data())),
       salt_size(static_cast<size_t>(info[3].As<Napi::Buffer<char>>().Length()))
     {
-      ScryptPeristentObject = Napi::Object::New(info.Env());
+      ScryptPeristentObject = Napi::Persistent(Napi::Object::New(info.Env()));
       ScryptPeristentObject.Set(Napi::String::New(info.Env(), "KeyBuffer"), info[0]);
       ScryptPeristentObject.Set(Napi::String::New(info.Env(), "HashBuffer"), Napi::Buffer<char>::New(info.Env(), static_cast<uint32_t>(hash_size)));
       ScryptPeristentObject.Set(Napi::String::New(info.Env(), "SaltBuffer"), info[3]);

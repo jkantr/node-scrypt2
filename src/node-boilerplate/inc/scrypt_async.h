@@ -53,6 +53,7 @@ class ScryptAsyncWorker : public Napi::AsyncWorker {
     // Overrides N-API, needed for checking result
     //
     void OnWorkComplete() {
+      Napi::HandleScope scope(Env());
       if (result == 0)
         OnOK();
       else
@@ -65,7 +66,7 @@ class ScryptAsyncWorker : public Napi::AsyncWorker {
     //
     // Scrypt specific state
     //
-    Napi::Object ScryptPeristentObject; // Anything persistent stored here
+    Napi::ObjectReference ScryptPeristentObject; // Anything persistent stored here
     unsigned int result; // Result of Scrypt functions
 };
 

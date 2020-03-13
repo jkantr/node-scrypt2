@@ -454,6 +454,7 @@ describe("Scrypt Node Module Tests", function() {
       describe("Promise asynchronous functionality with correct arguments", function() {
         if (typeof Promise !== "undefined") {
           var hash_length = Math.floor(Math.random() * 100) + 1; //Choose random number between 1 and 100
+          var hash_length2 = Math.floor(Math.random() * 100) + 1; //Choose random number between 1 and 100
           it("Will return a buffer object containing the hash with a string input", function(done) {
             scrypt.hash("hash something", {N:16, r:1, p:1}, hash_length, "NaCl").then(function(result){
               expect(result)
@@ -461,6 +462,29 @@ describe("Scrypt Node Module Tests", function() {
               expect(result)
                 .to.have.length(hash_length);
               done();
+             });
+          });
+
+          it("Will return buffer objects containing the hashes with string inputs (with concurrency)", function(done) {
+            Promise.all([
+              scrypt.hash("hash something", {N:16, r:1, p:1}, hash_length, "NaCl"),
+              scrypt.hash("hash something else", {N:16, r:1, p:1}, hash_length2, "NaCl2"),
+            ])
+            .then(function(res){
+              var result1 = res[0];
+              var result2 = res[1];
+              expect(result1)
+                .to.be.an.instanceof(Buffer);
+              expect(result1)
+                .to.have.length(hash_length);
+              expect(result2)
+                .to.be.an.instanceof(Buffer);
+              expect(result2)
+                .to.have.length(hash_length2);
+              done();
+             })
+             .catch(function(err){
+               done(err);
              });
           });
         }

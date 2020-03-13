@@ -37,7 +37,7 @@ class ScryptKDFAsyncWorker : public ScryptAsyncWorker {
       salt_ptr(reinterpret_cast<uint8_t*>(args[2].As<Napi::Buffer<char>>().Data()))
     {
       Napi::Env env = args.Env();
-      ScryptPeristentObject = Napi::Object::New(env);
+      ScryptPeristentObject = Napi::Persistent(Napi::Object::New(env));
       ScryptPeristentObject.Set(Napi::String::New(env, "keyBuffer"), args[0]);
       ScryptPeristentObject.Set(Napi::String::New(env, "KDFResult"), Napi::Buffer<char>::New(env, 96));
       ScryptPeristentObject.Set(Napi::String::New(env, "salt"), args[2]);

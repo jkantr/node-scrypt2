@@ -36,7 +36,7 @@ class ScryptKDFVerifyAsyncWorker : public ScryptAsyncWorker {
       key_size(info[1].As<Napi::Buffer<char>>().Length()),
       match(false)
     {
-      ScryptPeristentObject = Napi::Object::New(info.Env());
+      ScryptPeristentObject = Napi::Persistent(Napi::Object::New(info.Env()));
       ScryptPeristentObject.Set(Napi::String::New(info.Env(), "KDFBuffer"), info[0]);
       ScryptPeristentObject.Set(Napi::String::New(info.Env(), "KeyBuffer"), info[1]);
     };
