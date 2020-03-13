@@ -1,49 +1,21 @@
-# Scrypt For Node
+# node-script2
 
-[![Build Status](https://travis-ci.org/barrysteyn/node-scrypt.png?branch=master)](https://travis-ci.org/barrysteyn/node-scrypt)
-[![npm version](https://badge.fury.io/js/scrypt.svg)](http://badge.fury.io/js/scrypt)
-
-#WARNING!!!
-This module is deprecated. Instead, use https://nodejs.org/api/crypto.html#crypto_crypto_scrypt_password_salt_keylen_options_callback
+## NOTICE
+This module is an updated, modernized, and maintained fork of the `node-scrypt` library, which is unmaintained and deprecated.
 
 Scrypt for Node/IO is a native node/io C++ wrapper for Colin Percival's
 [scrypt](https://www.tarsnap.com/scrypt.html) cryptographic hash utility.
 
 As should be the case with any security tool, this library should be scrutinized
-by anyone using it. If you find or suspect an issue with the code- please bring
+by anyone using it. If you find or suspect an issue with the code - please bring
 it to my attention and I'll spend some time trying to make sure that this tool is
 as secure as possible.
 
-## Node-Scrypt Version 6
-Version 6 is a major new release. It is by and large compatible with version 5.
- 
-  * Scrypt version 1.2.0 is being used (a very recently released version of Scrypt)
+## Features
+
+  * Scrypt version 1.2.0 is being used (a modern version of Scrypt)
   * Using Node's internal cryptographic libraries - for windows users, there is no need to use an external OpenSSL library anymore.
   * Using Node's OS module to check for freemem, meaning no need to use any system calls and therefore no external dependencies
-
-Version 6 should work much better on all platforms
-
-## Past Releases
-### Node-Scrypt Version 5
-Version 5 is a major new release that is **not backward compatible** with any
-previous version. Some highlights:
-
-  * C++ addon code rewritten:
-    * Using [Nan 2.x](https://github.com/nodejs/nan)
-    * Code has been greatly simplified
-  * ES6 Promise aware.
-  * API has changed:
-    * Every output is a buffer.
-    * Separated functions into async and sync versions.
-    * Api name swap: What was kdf in previous versions is now hash (and vice versa).
-    * Async functions will return a Promise if no callback function is present and Promises are available (else it will throw a SyntaxError).
-  * Using correct [JavaScript Error](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Error) object for all errors.
-
-### Migrating To Version 5
-Version 5 is not backward compatible, but it should still be easy to migrate.
-Please read the [api section](#api) to see what's changed. One big change that is
-worth noting is a name change: What used to be called **hash** has now been
-changed to **kdf** and conversely, what was **kdf** is now called **hash**.
 
 ## Table Of Contents
 
@@ -84,11 +56,11 @@ More information can be found here:
 
 ## Install From NPM
 
-    npm install scrypt
+    npm install node-scrypt2
 
 ## Install From Source
 
-    git clone https://github.com/barrysteyn/node-scrypt.git
+    git clone https://github.com/jkantr/node-scrypt2.git
     cd node-scrypt
     npm install
     node-gyp configure build
@@ -113,7 +85,6 @@ Translates human understandable parameters to scrypt's internal parameters.
   * callback_function - [OPTIONAL] - not applicable to synchronous function. If present in async function, then it will be treated as a normal async callback. If not present, a Promise will be returned if ES6 promises are available. If not present and ES6 promises are not present, a SyntaxError will be thrown.
 
 ## kdf
-**Note**: In previous versions, this was called *hash*.
 
 Produces a key derivation function that uses the scrypt hash function. This
 should be used for hashing and checking passwords as it incorporates salt as well
@@ -161,12 +132,12 @@ This is the raw scrypt hash function.
 ## params
 
 ```JavaScript
-var scrypt = require("scrypt");
+const scrypt = require("node-scrypt2");
 
 //Synchronous
 try {
   //Uses 0.1 for maxtime, and default values maxmem and maxmemfrac
-  var scryptParameters = scrypt.paramsSync(0.1);
+  const scryptParameters = scrypt.paramsSync(0.1);
   console.log(scryptParameters);
 } catch(err) {
   //handle error
@@ -178,57 +149,57 @@ scrypt.params(0.1, function(err, scryptParameters) {
 });
 
 //Asynchronous with promise
-scrypt.params(0.1).then(function(result){
-  console.log(result);
-}, function(err) {
-  console.log(err);
-});
+scrypt.params(0.1)
+  .then(function(result) {
+    console.log(result);
+  })
+  .catch(function(err) {
+    console.log(err);
+  });
 ```
 
 ## kdf
 
 ```JavaScript
-var scrypt = require("scrypt");
-var scryptParameters = scrypt.paramsSync(0.1);
-var key = new Buffer("this is a key"); //could also be a string
+const scrypt = require("node-scrypt2");
+const scryptParameters = scrypt.paramsSync(0.1);
+const key = Buffer.from("this is a key"); //could also be a string
 
 //Synchronous example that will output in hexidecimal encoding
-var kdfResult = scrypt.kdfSync(key, scryptParameters); //should be wrapped in try catch, but leaving it out for brevity
-console.log("Synchronous result: "+kdfResult.toString("hex"));
+const kdfResult = scrypt.kdfSync(key, scryptParameters); //should be wrapped in try catch, but leaving it out for brevity
+console.log("Synchronous result: ", kdfResult.toString("hex"));
 
 //Asynchronous example that expects key to be ascii encoded
-scrypt.kdf("ascii encoded key", {N: 1, r:1, p:1}, function(err, result){
+scrypt.kdf("ascii encoded key", {N: 1, r:1, p:1}, function(err, result) {
   //Note how scrypt parameters was passed as a JSON object
-  console.log("Asynchronous result: "+result.toString("base64"));
+  console.log("Asynchronous result: ", result.toString("base64"));
 });
 
 //Asynchronous with promise
-scrypt.kdf("ascii encoded key", {N: 1, r:1, p:1}).then(function(result){
-  console.log("Asynchronous result: "+result.toString("base64"));
-}, function(err){
-});
+scrypt.kdf("ascii encoded key", {N: 1, r:1, p:1}).then(function(result) {
+  console.log("Asynchronous result: ", result.toString("base64"));
+};
 ```
 
 ## verifyKdf
 
 ```JavaScript
-var scrypt = require("scrypt");
-var scryptParameters = scrypt.paramsSync(0.1);
-var kdfResult = scrypt.kdfSync("password", scryptParameters);
+const scrypt = require("node-scrypt2");
+const scryptParameters = scrypt.paramsSync(0.1);
+const kdfResult = scrypt.kdfSync("password", scryptParameters);
 
 //Synchronous
 scrypt.verifyKdfSync(kdfResult, "password"); // returns true
 scrypt.verifyKdfSync(kdfResult, "incorrect password"); // returns false
 
 //Asynchronous
-scrypt.verifyKdf(kdfResult, new Buffer("password"), function(err, result) {
+scrypt.verifyKdf(kdfResult, Buffer.from("password"), function(err, result) {
   //result will be true
 });
 
 //Asynchronous with promise
-scrypt.verifyKdf(kdfResult, "incorrect password").then(function(result) {
+scrypt.verifyKdf(kdfResult, Buffer.from("incorrect password")).then(function(result) {
   //result will be false
-}, function(err) {
 });
 ```
 
@@ -238,32 +209,32 @@ The [scrypt paper](http://www.tarsnap.com/scrypt/scrypt.pdf) lists four [test ve
 ### Test Vector 1
 
 ```JavaScript
-var scrypt = require("scrypt");
-var key = new Buffer("");
+const scrypt = require("node-scrypt2");
+const key = Buffer.from("");
 
 //Synchronous
-var result = scrypt.hashSync(key,{"N":16,"r":1,"p":1},64,"");
+const result = scrypt.hashSync(key, {"N":16,"r":1,"p":1}, 64, "");
 console.log(result.toString("hex"));
 
 //Asynchronous
-scrypt.hash(key, {"N":16,"r":1,"p":1},64,"", function(err, res) {
+scrypt.hash(key, {"N":16,"r":1,"p":1}, 64, "", function(err, res) {
   console.log(result.toString("hex"));
 });
 
 //Asynchronous with promise
-scrypt.hash(key, {"N":16,"r":1,"p":1},64,"").then(function(result) {
+scrypt.hash(key, {"N":16,"r":1,"p":1}, 64, "").then(function(result) {
   console.log(result.toString("hex"));
-}, function(err){});
+});
 ```
 
 ### Test Vector 2
 
 ```JavaScript
-var scrypt = require("scrypt");
-var salt = new Buffer("NaCl");
+const scrypt = require("node-scrypt2");
+const salt = Buffer.from("NaCl");
 
 //Synchronous
-var result = scrypt.hashSync("password", {"N":1024,"r":8,"p":16}, 64, salt);
+const result = scrypt.hashSync("password", {"N":1024,"r":8,"p":16}, 64, salt);
 console.log(result.toString("hex"));
 
 scrypt.hash("password", {"N":1024,"r":8,"p":16},64,salt, function(err, result) {
@@ -274,12 +245,12 @@ scrypt.hash("password", {"N":1024,"r":8,"p":16},64,salt, function(err, result) {
 ### Test Vector 3
 
 ```JavaScript
-var scrypt = require("scrypt");
-var key = new Buffer("pleaseletmein");
-var salt = new Buffer("SodiumChloride");
+const scrypt = require("node-scrypt2");
+const key = Buffer.from("pleaseletmein");
+const salt = Buffer.from("SodiumChloride");
 
 //Synchronous
-var result = scrypt.hashSync(key,{"N":16384,"r":8,"p":1},64,salt);
+const result = scrypt.hashSync(key, {"N":16384,"r":8,"p":1}, 64, salt);
 console.log(result.toString("hex"));
 
 //Asynchronous
@@ -292,14 +263,14 @@ scrypt.hash(key, {"N":16384,"r":8,"p":1}, 64, salt, function(err, result) {
 Note: This test vector is very taxing in terms of resources.
 
 ```JavaScript
-var scrypt = require("scrypt");
+const scrypt = require("node-scrypt2");
 
 //Synchronous
-var result = scrypt.hashSync("pleaseletmein",{"N":1048576,"r":8,"p":1},64,"SodiumChloride");
+const result = scrypt.hashSync("pleaseletmein", {"N":1048576,"r":8,"p":1}, 64, "SodiumChloride");
 console.log(result.toString("hex"));
 
 //Asynchronous
-scrypt.hash("pleaseletmein", {"N":1048576,"r":8,"p":1},64,"SodiumChloride", function(err, result) {
+scrypt.hash("pleaseletmein", {"N":1048576,"r":8,"p":1}, 64, "SodiumChloride", function(err, result) {
   console.log(result.toString("hex"));
 });
 ```
@@ -314,7 +285,7 @@ and **Microsoft Windows**. It also works on FreeBSD, OpenBSD, SunOS etc.
 ## Scrypt
 ### Why Use Scrypt?
 
-It is probably the most advanced key derivation function available. This is is quote taken
+It is one of the most advanced key derivation functions available. This is is quote taken
 from a comment in hacker news:
 
 >Passwords hashed with scrypt with sufficiently-high strength values (there are 3 tweakable
@@ -334,8 +305,8 @@ as an [Internet Draft](http://en.wikipedia.org/wiki/Internet_Draft) and is thus 
 * It is designed to be future proof against attacks with future (and more advanced) hardware.
 * It is designed to defend against large scale custom hardware attacks.
 * It is production ready.
-* There is a scrypt library for most major scripting languages
-(Python, Ruby etc). Now this module provides the library for NodeJS :)
+* It does not arbitrarily limit password length to 72 bytes (ahem, bcrypt)
+* There is a scrypt library for most general purpose languages (Python, Ruby etc).
 
 I will end this section with a quote from Colin Percival (author of scrypt):
 
@@ -345,10 +316,7 @@ cost of a similar attack against bcrypt (to find the same password), and 20000 t
 than a similar attack against PBKDF2.
 
 #### Cons
-There is just one con I can think of: It is a relatively new library (only been around since 2009).
-Cryptographers don't really like new libraries for production deployment as it has not been *battle
-tested*. That being said, it is being actively used in [Tarsnap](http://www.tarsnap.com/)
-(as mentioned above) and the author is very active.
+There is just one con I can think of: It is a relatively new library (only been around since 2009, compare to 1999 for bcrypt). Cryptographers don't really like new libraries for production deployment as it has not been *battle tested* quite as much. That being said, the library that this module is based on (`node-scrypt`) has been in heavy use since 2014. So there's a lot of production use in the books.
 
 ## Using Scrypt With Passwords
 ### What Are The Essential Properties For Storing Passwords?
@@ -406,9 +374,11 @@ For those that are curious or paranoid, please look at how the kdf is both [prod
 and [verified](https://github.com/barrysteyn/node-scrypt/blob/master/src/scryptwrapper/keyderivation.c#L82-L121) (you are going to need some knowledge of the [C language](http://c.learncodethehardway.org/book/) for this).
 
 # Roadmap
-See [changelog](https://github.com/barrysteyn/node-scrypt/blob/master/changelog.md) for upcoming features.
+See [changelog](https://github.com/barrysteyn/node-scrypt/blob/master/changelog.md).
 
 # Credits
 The scrypt library is Colin Percival's [scrypt](http://www.tarsnap.com/scrypt.html) project.
+
+This module is largely a direct fork of the original `node-scrypt` library, developed by Barry Steyn.
 
 Syed Beparey was instrumental in getting the Windows build working, with most of the Windows build based off the work done by Dinesh Shanbhag.

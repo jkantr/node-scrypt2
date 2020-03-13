@@ -1,7 +1,7 @@
 {
-  "name": "scrypt",
-  "description": "The scrypt crypto library for NodeJS",
-  "version": "6.0.3",
+  "name": "node-scrypt2",
+  "description": "A known, battle tested implementation of the scrypt crypto library for Node.js",
+  "version": "1.0.0",
   "license": "zlib",
   "keywords": [
     "scrypt",
@@ -17,21 +17,20 @@
     "verify"
   ],
   "author": {
-    "name": "Barry Steyn",
-    "email": "barry.steyn@gmail.com",
-    "url": "http://doctrina.org"
+    "name": "Jared Kantrowitz",
+    "email": "me@jkantr.com"
   },
   "engines": {
     "node": ">= 0.10"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/barrysteyn/node-scrypt.git"
+    "url": "https://github.com/jkantr/node-scrypt.git"
   },
   "devDependencies": {
     "chai": "3.0.0",
     "chai-as-promised": "^5.1.0",
-    "mocha": "^7.0.1"
+    "mocha": "^6.2.2"
   },
   "dependencies": {
     "node-addon-api": "^2.0.0"
@@ -41,9 +40,6 @@
       "type": "MIT"
     }
   ],
-  "bugs": {
-    "url": "https://github.com/barrysteyn/node-scrypt/issues"
-  },
   "scripts": {
     "preinstall": "node node-scrypt-preinstall.js",
     "install": "node-gyp rebuild",
