@@ -153,7 +153,7 @@ var processKDFArguments = function(args) {
   //
   if (typeof args[0] === "string")
     // Convert string to buffer (if necessary)
-    args[0] = new Buffer(args[0]);
+    args[0] = Buffer.from(args[0]);
   else if (!Buffer.isBuffer(args[0])) {
     var error = new TypeError("Key type is incorrect: It can only be of type string or Buffer");
     error.propertyName = "key";
@@ -177,7 +177,7 @@ var processVerifyArguments = function(args) {
   //
   if (typeof args[0] === "string")
     // Convert string to buffer (if necessary)
-    args[0] = new Buffer(args[0]);
+    args[0] = Buffer.from(args[0]);
   else if (!Buffer.isBuffer(args[0])) {
     var error = new TypeError("KDF type is incorrect: It can only be of type string or Buffer");
     error.propertyName = "KDF";
@@ -190,7 +190,7 @@ var processVerifyArguments = function(args) {
   //
   if (typeof args[1] === "string")
     // Convert string to buffer (if necessary)
-    args[1] = new Buffer(args[1]);
+    args[1] = Buffer.from(args[1]);
   else if (!Buffer.isBuffer(args[1])) {
     var error = new TypeError("Key type is incorrect: It can only be of type string or Buffer");
     error.propertyName = "key";
@@ -209,7 +209,7 @@ var processHashArguments = function(args) {
   //
   if (typeof args[0] === "string")
     // Convert string to buffer (if necessary)
-    args[0] = new Buffer(args[0]);
+    args[0] = Buffer.from(args[0]);
   else if (!Buffer.isBuffer(args[0])) {
     var error = new TypeError("Key type is incorrect: It can only be of type string or Buffer");
     error.propertyName = "KDF";
@@ -235,7 +235,7 @@ var processHashArguments = function(args) {
   //
   if (typeof args[3] === "string")
     // Convert string to buffer (if necessary)
-    args[3] = new Buffer(args[3]);
+    args[3] = Buffer.from(args[3]);
   else if (!Buffer.isBuffer(args[3])) {
     var error = new TypeError("Salt type is incorrect: It can only be of type string or Buffer");
     error.propertyName = "salt";
