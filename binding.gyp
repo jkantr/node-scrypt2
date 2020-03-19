@@ -33,6 +33,9 @@
         'AdditionalOptions': ['/EHsc'],
         'DisableSpecificWarnings': ['4506'],
       },
+      "VCLinkerTool": {
+        "ImageHasSafeExceptionHandlers": "false"
+      }
     },
   },
 
@@ -41,12 +44,10 @@
       'target_name': 'copied_files',
       'cflags!': [ '-fno-exceptions' ],
       'cflags_cc!': [ '-fno-exceptions' ],
-      'xcode_settings': { 'GCC_ENABLE_CPP_EXCEPTIONS': 'YES',
+      'xcode_settings': {
+        'GCC_ENABLE_CPP_EXCEPTIONS': 'YES',
         'CLANG_CXX_LIBRARY': 'libc++',
         'MACOSX_DEPLOYMENT_TARGET': '10.7',
-      },
-      'msvs_settings': {
-        'VCCLCompilerTool': { 'ExceptionHandling': 1 },
       },
       'conditions': [
         ['OS=="win"', {
@@ -66,9 +67,6 @@
       'xcode_settings': { 'GCC_ENABLE_CPP_EXCEPTIONS': 'YES',
         'CLANG_CXX_LIBRARY': 'libc++',
         'MACOSX_DEPLOYMENT_TARGET': '10.7',
-      },
-      'msvs_settings': {
-        'VCCLCompilerTool': { 'ExceptionHandling': 1 },
       },
       'type' : 'static_library',
       'sources': [
@@ -102,12 +100,10 @@
       'target_name': 'scrypt_wrapper',
       'cflags!': [ '-fno-exceptions' ],
       'cflags_cc!': [ '-fno-exceptions' ],
-      'xcode_settings': { 'GCC_ENABLE_CPP_EXCEPTIONS': 'YES',
+      'xcode_settings': {
+        'GCC_ENABLE_CPP_EXCEPTIONS': 'YES',
         'CLANG_CXX_LIBRARY': 'libc++',
         'MACOSX_DEPLOYMENT_TARGET': '10.7',
-      },
-      'msvs_settings': {
-        'VCCLCompilerTool': { 'ExceptionHandling': 1 },
       },
       'type' : 'static_library',
       'sources': [
@@ -141,9 +137,6 @@
       'xcode_settings': { 'GCC_ENABLE_CPP_EXCEPTIONS': 'YES',
         'CLANG_CXX_LIBRARY': 'libc++',
         'MACOSX_DEPLOYMENT_TARGET': '10.7',
-      },
-      'msvs_settings': {
-        'VCCLCompilerTool': { 'ExceptionHandling': 1 },
       },
       'sources': [
         'src/node-boilerplate/scrypt_common.cc',

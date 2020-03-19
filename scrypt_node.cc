@@ -33,13 +33,13 @@ using namespace Napi;
 // Forward declarations
 //
 Napi::Value paramsSync(const Napi::CallbackInfo& info);
-Napi::Value params(const Napi::CallbackInfo& info);
+void params(const Napi::CallbackInfo& info);
 Napi::Value kdfSync(const Napi::CallbackInfo& info);
-Napi::Value kdf(const Napi::CallbackInfo& info);
+void kdf(const Napi::CallbackInfo& info);
 Napi::Value kdfVerifySync(const Napi::CallbackInfo& info);
-Napi::Value kdfVerify(const Napi::CallbackInfo& info);
+void kdfVerify(const Napi::CallbackInfo& info);
 Napi::Value hashSync(const Napi::CallbackInfo& info);
-Napi::Value hash(const Napi::CallbackInfo& info);
+void hash(const Napi::CallbackInfo& info);
 
 //
 // Module initialisation

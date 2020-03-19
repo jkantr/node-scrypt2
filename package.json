@@ -1,7 +1,7 @@
 {
   "name": "node-scrypt2",
   "description": "A known, battle tested implementation of the scrypt crypto library for Node.js",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "license": "zlib",
   "keywords": [
     "scrypt",
